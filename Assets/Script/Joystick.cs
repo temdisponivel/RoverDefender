@@ -3,16 +3,8 @@ using System.Collections;
 
 public class Joystick : MonoBehaviour
 {
-    private Quaternion initialRotation = default(Quaternion);
     private float sumAngleHorizontal = 0;
     private float sumAngleVertical = 0;
-    private float lastAngleHorizontal = 0;
-    private float lastAngleVertical = 0;
-
-    void Start()
-    {
-        initialRotation = this.transform.rotation;
-    }
 
     void Update()
     {

@@ -15,7 +15,7 @@ public class GameManager : MonoBehaviour
     public AudioSource audioEnviroment = null;
     private LinkedList<bool> inBattle = new LinkedList<bool>();
     
-    void Start()
+    void Awake()
     {
         if (GameManager.Instance == null)
         {
@@ -48,6 +48,7 @@ public class GameManager : MonoBehaviour
 
     public void StartGame()
     {
+        Amenemy.Restart();
         this.collectedManager.MaxCollects = 0;
         this.collectedManager.Collected = 0;
         inBattle.Clear();
@@ -56,7 +57,6 @@ public class GameManager : MonoBehaviour
     public void FinishGame()
     {
         Application.LoadLevel("FinishGame");
-        Amenemy.Restart();
     }
 
     public void GameOver()

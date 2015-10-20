@@ -3,18 +3,18 @@ using System.Collections;
 
 public class AutoDestroyParticle : MonoBehaviour
 {
-    private ParticleSystem particleSystem;
+    private ParticleSystem particle;
 
     public void Start()
     {
-        particleSystem = this.GetComponent<ParticleSystem>();
+        particle = this.GetComponent<ParticleSystem>();
     }
 
     public void Update()
     {
-        if (particleSystem)
+        if (particle)
         {
-            if (!particleSystem.IsAlive())
+            if (!particle.IsAlive())
             {
                 GameObject.Destroy(gameObject);
             }

@@ -16,7 +16,6 @@ public class Rover : MonoBehaviour
     public float coolDown = 0.3f;
     private ParticleSystem particleDirty = null;
     private float lastFireTime = 0;
-    private float projectileCount = 0;
     private AudioSource audioRobot = null;
 
     void Start()

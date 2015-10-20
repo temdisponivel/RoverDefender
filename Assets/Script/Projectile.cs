@@ -9,12 +9,12 @@ public class Projectile : MonoBehaviour
     public float distanceRate = 1000;
     private float sumDistances = 0;
     public bool targerRover = false;
-    private AudioSource audio = null;
+    private AudioSource audioExplosion = null;
     private bool died = false;
 
     void Start()
     {
-        this.audio = this.GetComponent<AudioSource>();
+        this.audioExplosion = this.GetComponent<AudioSource>();
     }
 
     void Update()
@@ -66,9 +66,9 @@ public class Projectile : MonoBehaviour
     {
         if (died) return;
         died = true;
-        this.audio.Play();
+        this.audioExplosion.Play();
         GameObject.Instantiate(particle, this.transform.position, this.transform.rotation);
-        GameObject.Destroy(this.gameObject, this.audio.clip.length);
+        GameObject.Destroy(this.gameObject, this.audioExplosion.clip.length);
         GameObject.Destroy(this);
     }
 }
