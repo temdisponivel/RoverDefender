@@ -17,6 +17,7 @@ public class Rover : MonoBehaviour
     private ParticleSystem particleDirty = null;
     private float lastFireTime = 0;
     private float projectileCount = 0;
+    private AudioSource audioRobot = null;
 
     void Start()
     {
@@ -24,6 +25,7 @@ public class Rover : MonoBehaviour
         initialLife = life;
         initialScale = lifeBar.transform.localScale;
         particleDirty = dirtyParticle.GetComponent<ParticleSystem>();
+        audioRobot = this.GetComponent<AudioSource>();
     }
         
     void Update()
@@ -52,12 +54,22 @@ public class Rover : MonoBehaviour
             {
                 particleDirty.Play();
             }
+
+            if (!audioRobot.isPlaying)
+            {
+                audioRobot.Play();
+            }
         }
         else if (verticallMoviment == 0)
         {
             if (particleDirty.isPlaying)
             {
                 particleDirty.Stop();
+            }
+
+            if (audioRobot.isPlaying)
+            {
+                audioRobot.Pause();
             }
         }
     }

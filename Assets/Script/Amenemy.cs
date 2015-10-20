@@ -6,8 +6,8 @@ using UnityEditor;
 
 public class Amenemy : MonoBehaviour
 {
-    static public LinkedList<Amenemy> Amenemys { get; set; }
-    static private LinkedList<Amenemy> AmenemyRemove { get; set; }
+    static public LinkedList<Amenemy> Amenemys = new LinkedList<Amenemy>();
+    static private LinkedList<Amenemy> AmenemyRemove = new LinkedList<Amenemy>();
     protected Rover rover = null;
     public GameObject dirtyParticle = null;
     public GameObject projectile = null;
@@ -16,18 +16,21 @@ public class Amenemy : MonoBehaviour
     public float force = 1;
     private float lastFireTime = 0;
     public float coolDown = 0.3f;
-    
-    public void Start()
-    {
-        if (Amenemy.Amenemys == null)
-        {
-            Amenemy.Amenemys = new LinkedList<Amenemy>();
-            Amenemy.AmenemyRemove = new LinkedList<Amenemy>();
-        }
+    public bool battle = false;
+    private AudioSource audioRobot = null;
 
+    static public void Restart()
+    {
+        Amenemy.Amenemys.Clear();
+        Amenemy.AmenemyRemove.Clear();
+    }
+    
+    public void Awake()
+    {
         Amenemy.Amenemys.AddLast(this);
         rover = Rover.Instance;
         particleDirty = dirtyParticle.GetComponent<ParticleSystem>();
+        audioRobot = this.GetComponent<AudioSource>();
     }
 
     void Update()
@@ -49,15 +52,16 @@ public class Amenemy : MonoBehaviour
             {
                 particleDirty.Stop();
             }
-        }
-        else if (Vector3.Distance(this.transform.position, rover.transform.position) < GameManager.Instance.distancyToFollow)
-        {
-            this.transform.LookAt(rover.transform);
-            this.transform.position = Vector3.Lerp(this.transform.position, rover.transform.position, (velocity * Time.deltaTime) / Vector3.Distance(this.transform.position, rover.transform.position));
 
-            if (!particleDirty.isPlaying)
+            if (audioRobot.isPlaying)
             {
-                particleDirty.Play();
+                audioRobot.Stop();
+            }
+
+            if (!battle)
+            {
+                battle = true;
+                GameManager.Instance.SetInBattle(battle);
             }
         }
         else if (Vector3.Distance(this.transform.position, rover.transform.position) < GameManager.Instance.distancyToAttack)
@@ -68,8 +72,34 @@ public class Amenemy : MonoBehaviour
                 lastFireTime = Time.realtimeSinceStartup;
                 GameObject.Instantiate(projectile, this.transform.position, this.transform.rotation);
             }
-        }
 
+            if (!battle)
+            {
+                battle = true;
+                GameManager.Instance.SetInBattle(battle);
+            }
+        }
+        else if (Vector3.Distance(this.transform.position, rover.transform.position) < GameManager.Instance.distancyToFollow)
+        {
+            this.transform.LookAt(rover.transform);
+            this.transform.position = Vector3.Lerp(this.transform.position, rover.transform.position, (velocity * Time.deltaTime) / Vector3.Distance(this.transform.position, rover.transform.position));
+
+            if (!particleDirty.isPlaying)
+            {
+                particleDirty.Play();
+            }
+
+            if (!audioRobot.isPlaying)
+            {
+                audioRobot.Play();
+            }
+
+            if (!battle)
+            {
+                battle = true;
+                GameManager.Instance.SetInBattle(battle);
+            }
+        }
     }
 
     void LateUpdate()
@@ -85,5 +115,6 @@ public class Amenemy : MonoBehaviour
     static public void KillAmenemy(Amenemy instance)
     {
         Amenemy.AmenemyRemove.AddLast(instance);
+        GameManager.Instance.SetInBattle(false);
     }
 }

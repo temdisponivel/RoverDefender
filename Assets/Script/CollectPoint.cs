@@ -11,12 +11,14 @@ public class CollectPoint : MonoBehaviour
     public GameObject collectingObj = null;
     private ParticleSystem emmiter = null;
     private ParticleSystem collecting = null;
+    private AudioSource audioDrilling = null;
 
     void Start()
     {
         emmiter = emmiterObj.GetComponent<ParticleSystem>();
         collecting = collectingObj.GetComponent<ParticleSystem>();
         CollectedManager.Instance.MaxCollects += this.point;
+        audioDrilling = this.GetComponent<AudioSource>();
     }
 
     void Update()
@@ -40,6 +42,10 @@ public class CollectPoint : MonoBehaviour
             {
                 collecting.Play();
             }
+            if (!audioDrilling.isPlaying)
+            {
+                audioDrilling.Play();
+            }
 
             if (point > 0)
             {
@@ -60,6 +66,10 @@ public class CollectPoint : MonoBehaviour
             if (collecting.isPlaying)
             {
                 collecting.Stop();
+            }
+            if (audioDrilling.isPlaying)
+            {
+                audioDrilling.Stop();
             }
         }
     }
