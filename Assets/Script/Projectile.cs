@@ -9,18 +9,10 @@ public class Projectile : MonoBehaviour
     public float distanceRate = 1000;
     private float sumDistances = 0;
     public bool targerRover = false;
-    private AudioSource audioExplosion = null;
-    private bool died = false;
-
-    void Start()
-    {
-        this.audioExplosion = this.GetComponent<AudioSource>();
-    }
+    public GameObject audioExplosion = null;
 
     void Update()
     {
-        if (this.died) return;
-
         if (Math.Abs(Terrain.activeTerrain.SampleHeight(this.transform.position) - this.transform.position.y) < 0.3)
         {
             this.Die();
@@ -36,8 +28,6 @@ public class Projectile : MonoBehaviour
 
     void LateUpdate()
     {
-        if (this.died) return;
-
         if (!targerRover)
         {
             foreach (var enemy in Amenemy.Amenemys)
@@ -64,11 +54,8 @@ public class Projectile : MonoBehaviour
 
     protected void Die()
     {
-        if (died) return;
-        died = true;
-        this.audioExplosion.Play();
         GameObject.Instantiate(particle, this.transform.position, this.transform.rotation);
-        GameObject.Destroy(this.gameObject, this.audioExplosion.clip.length);
-        GameObject.Destroy(this);
+        GameObject.Instantiate(audioExplosion, this.transform.position, this.transform.rotation);
+        GameObject.Destroy(this.gameObject);
     }
 }

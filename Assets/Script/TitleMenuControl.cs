@@ -5,6 +5,7 @@ public class TitleMenuControl : MonoBehaviour
 {
     private bool story = false;
     public GameObject panelStory = null;
+    public GameObject blackBoard = null;
 
     public void PlayAction()
     {
@@ -29,5 +30,6 @@ public class TitleMenuControl : MonoBehaviour
     {
         this.story = true;
         this.panelStory.SetActive(true);
+        this.blackBoard.SetActive(true);
     }
 }

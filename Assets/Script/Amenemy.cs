@@ -2,13 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System;
-using UnityEditor;
 
 public class Amenemy : MonoBehaviour
 {
     static public LinkedList<Amenemy> Amenemys = new LinkedList<Amenemy>();
     static private LinkedList<Amenemy> AmenemyRemove = new LinkedList<Amenemy>();
-    protected Rover rover = null;
     public GameObject dirtyParticle = null;
     public GameObject projectile = null;
     private ParticleSystem particleDirty = null;
@@ -18,6 +16,9 @@ public class Amenemy : MonoBehaviour
     public float coolDown = 0.3f;
     public bool battle = false;
     private AudioSource audioRobot = null;
+    private Light lightVisibility = null;
+    public SwapMaterial eyes = null;
+    public Material angryEyes = null;
 
     static public void Restart()
     {
@@ -28,25 +29,25 @@ public class Amenemy : MonoBehaviour
     public void Awake()
     {
         Amenemy.Amenemys.AddLast(this);
-        rover = Rover.Instance;
         particleDirty = dirtyParticle.GetComponent<ParticleSystem>();
         audioRobot = this.GetComponent<AudioSource>();
+        lightVisibility = this.GetComponent<Light>();
     }
 
     void Update()
     {
-        if (rover == null && Rover.Instance != null) 
-        { 
-            rover = Rover.Instance; 
-        }
-        
-        if (Vector3.Distance(this.transform.position, rover.transform.position) <= GameManager.Instance.distancyToCollision)
+        if (!battle && !Rover.Instance.Visible)
         {
-            this.transform.LookAt(rover.transform);
+            return;
+        }
+
+        if (Vector3.Distance(this.transform.position, Rover.Instance.transform.position) <= GameManager.Instance.distancyToCollision)
+        {
+            this.transform.LookAt(Rover.Instance.transform);
             if (Time.realtimeSinceStartup - lastFireTime >= coolDown / 2)
             {
                 lastFireTime = Time.realtimeSinceStartup;
-                rover.RemoveLife(this.force);
+                Rover.Instance.RemoveLife(this.force);
             }
             if (particleDirty.isPlaying)
             {
@@ -62,11 +63,14 @@ public class Amenemy : MonoBehaviour
             {
                 battle = true;
                 GameManager.Instance.SetInBattle(battle);
+                lightVisibility.enabled = true;
+                eyes.Swap(angryEyes);
             }
         }
-        else if (Vector3.Distance(this.transform.position, rover.transform.position) < GameManager.Instance.distancyToAttack)
+        
+        if (Vector3.Distance(this.transform.position, Rover.Instance.transform.position) < GameManager.Instance.distancyToAttack)
         {
-            this.transform.LookAt(rover.transform);
+            this.transform.LookAt(Rover.Instance.transform);
             if (Time.realtimeSinceStartup - lastFireTime >= coolDown)
             {
                 lastFireTime = Time.realtimeSinceStartup;
@@ -77,12 +81,15 @@ public class Amenemy : MonoBehaviour
             {
                 battle = true;
                 GameManager.Instance.SetInBattle(battle);
+                lightVisibility.enabled = true;
+                eyes.Swap(angryEyes);
             }
         }
-        else if (Vector3.Distance(this.transform.position, rover.transform.position) < GameManager.Instance.distancyToFollow)
+        float d;
+        if ((d = Vector3.Distance(this.transform.position, Rover.Instance.transform.position)) < GameManager.Instance.distancyToFollow && d > GameManager.Instance.distancyToCollision)
         {
-            this.transform.LookAt(rover.transform);
-            this.transform.position = Vector3.Lerp(this.transform.position, rover.transform.position, (velocity * Time.deltaTime) / Vector3.Distance(this.transform.position, rover.transform.position));
+            this.transform.LookAt(Rover.Instance.transform);
+            this.transform.position = Vector3.Lerp(this.transform.position, Rover.Instance.transform.position, (velocity * Time.deltaTime) / Vector3.Distance(this.transform.position, Rover.Instance.transform.position));
 
             if (!particleDirty.isPlaying)
             {
@@ -96,8 +103,10 @@ public class Amenemy : MonoBehaviour
 
             if (!battle)
             {
+                this.lightVisibility.enabled = true;
                 battle = true;
                 GameManager.Instance.SetInBattle(battle);
+                eyes.Swap(angryEyes);
             }
         }
     }

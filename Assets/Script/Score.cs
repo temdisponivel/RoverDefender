@@ -9,7 +9,16 @@ public class Score : MonoBehaviour
     void Start()
     {
         this.text = this.GetComponent<Text>();
-        this.text.text += CollectedManager.Instance.Collected + " units of marsian mineral in: " + GameManager.Instance.TimeGamePlay + " seconds.";
+        string message = "You have collect: " + CollectedManager.Instance.Collected + " amount of material. We already receive the information about it. \n";
+        if (CollectedManager.Instance.AlienDiscovered)
+        {
+            message += "And you have confirmed the existence of extraterrestrial life. Mulder would be proud! \n";
+        }
+        else
+        {
+            message += "You have not found a alien. I guess Scully was right.";
+        }
+        this.text.text += message;
     }
 
     void Update()

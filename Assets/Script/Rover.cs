@@ -17,6 +17,8 @@ public class Rover : MonoBehaviour
     private ParticleSystem particleDirty = null;
     private float lastFireTime = 0;
     private AudioSource audioRobot = null;
+    private Light lightVisibility = null;
+    public bool Visible { get; set; }
 
     void Start()
     {
@@ -25,6 +27,8 @@ public class Rover : MonoBehaviour
         initialScale = lifeBar.transform.localScale;
         particleDirty = dirtyParticle.GetComponent<ParticleSystem>();
         audioRobot = this.GetComponent<AudioSource>();
+        lightVisibility = this.GetComponent<Light>();
+        Visible = lightVisibility.enabled;
     }
         
     void Update()
@@ -36,6 +40,12 @@ public class Rover : MonoBehaviour
             lastFireTime = Time.realtimeSinceStartup;
             GameObject.Instantiate(projectile, this.transform.position, this.transform.rotation);
         }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            lightVisibility.enabled = !lightVisibility.enabled;
+            Visible = lightVisibility.enabled;
+        }
     }
 
     public void LateUpdate()
@@ -45,6 +55,8 @@ public class Rover : MonoBehaviour
         float horizontalMoviment = Input.GetAxis("Horizontal");
         float verticallMoviment = Input.GetAxis("Vertical");
         this.transform.Rotate(Vector3.up, horizontalMoviment * angleMultiplier * 4, Space.World);
+        bool soundRobotPlay = horizontalMoviment != 0;
+
         if (verticallMoviment != 0 && Terrain.activeTerrain.SampleHeight((this.transform.position + (this.transform.forward * multiplier * verticallMoviment))) < 0.1)
         {
             this.transform.position += this.transform.forward * multiplier * verticallMoviment;
@@ -54,10 +66,7 @@ public class Rover : MonoBehaviour
                 particleDirty.Play();
             }
 
-            if (!audioRobot.isPlaying)
-            {
-                audioRobot.Play();
-            }
+            soundRobotPlay = true;
         }
         else if (verticallMoviment == 0)
         {
@@ -66,9 +75,21 @@ public class Rover : MonoBehaviour
                 particleDirty.Stop();
             }
 
+            soundRobotPlay = soundRobotPlay || false;
+        }
+
+        if (soundRobotPlay)
+        {
+            if (!audioRobot.isPlaying)
+            {
+                audioRobot.Play();
+            }
+        }
+        else
+        {
             if (audioRobot.isPlaying)
             {
-                audioRobot.Pause();
+                audioRobot.Stop();
             }
         }
     }

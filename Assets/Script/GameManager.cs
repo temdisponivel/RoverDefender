@@ -6,7 +6,6 @@ public class GameManager : MonoBehaviour
 {
     static public GameManager Instance = null;
     public float distancyToCollision = 1f;
-    public CollectedManager collectedManager = null;
     public float distancyToFollow = 3f;
     public float distancyToAttack = 5f;
     public float TimeGamePlay { get; set; }
@@ -17,21 +16,7 @@ public class GameManager : MonoBehaviour
     
     void Awake()
     {
-        if (GameManager.Instance == null)
-        {
-            GameManager.Instance = this;
-        }
-        else
-        {
-            GameObject.Destroy(this.gameObject);
-            return;
-        }
-
-        if (collectedManager == null && CollectedManager.Instance != null)
-        {
-            collectedManager = CollectedManager.Instance;
-        }
-
+        GameManager.Instance = this;
         inBattle = new LinkedList<bool>();
     }
 
@@ -49,8 +34,8 @@ public class GameManager : MonoBehaviour
     public void StartGame()
     {
         Amenemy.Restart();
-        this.collectedManager.MaxCollects = 0;
-        this.collectedManager.Collected = 0;
+        CollectedManager.Instance.MaxCollects = 0;
+        CollectedManager.Instance.Collected = 0;
         inBattle.Clear();
     }
 
